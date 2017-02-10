@@ -1,6 +1,6 @@
 package com.chriswlucas.echo;
 
-import com.chriswlucas.client_server_arch.GeneralThreadedServer;
+import com.chriswlucas.client_server_arch.ThreadedServer;
 
 public class EchoServer {
 
@@ -20,7 +20,7 @@ public class EchoServer {
 			System.exit(1);
 		}
 		
-		new GeneralThreadedServer<EchoServerHandler>(port, EchoServerHandler.class).start();
+		new ThreadedServer(port, new EchoServerHandler()).start();
 	}
 	
 }

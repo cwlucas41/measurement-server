@@ -1,6 +1,6 @@
 package com.chriswlucas.echo;
 
-import com.chriswlucas.client_server_arch.GeneralClient;
+import com.chriswlucas.client_server_arch.Client;
 
 public class EchoClient {
 	
@@ -21,7 +21,7 @@ public class EchoClient {
 			System.exit(1);
 		}
 	
-		new GeneralClient<EchoClientHandler>(hostname, port, EchoClientHandler.class).start();
+		new Client(hostname, port, new EchoClientHandler()).start();
 		
 	}
 	

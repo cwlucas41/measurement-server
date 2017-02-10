@@ -1,28 +1,26 @@
 package com.chriswlucas.client_server_arch;
 
-import java.lang.reflect.Constructor;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-public class GeneralClient<T extends GeneralHandler> {
+public class Client {
 	
 	String hostname;
 	int port;
-	Class<T> clientHandlerClass;
+	AppHandler clientHandler;
 	Socket clientSocket;
 
-	public GeneralClient(String hostname, int port, Class<T> clientHandlerClass) {
+	public Client(String hostname, int port, AppHandler clientHandler) {
 		this.hostname = hostname;
 		this.port = port;
-		this.clientHandlerClass = clientHandlerClass;
+		this.clientHandler = clientHandler;
 	}
 	
 	public void start() {
 		try {
 			clientSocket = new Socket(hostname, port);
 			
-			Constructor<T> constructor = clientHandlerClass.getConstructor(new Class[] {Socket.class});
-			T clientHandler = constructor.newInstance(new Object[] {clientSocket});		
+			clientHandler.setSocket(clientSocket);	
 			clientHandler.run();
 			
 		} catch (UnknownHostException e) {

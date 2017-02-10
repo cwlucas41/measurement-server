@@ -1,18 +1,20 @@
 package com.chriswlucas.client_server_arch;
 
-import java.lang.reflect.Constructor;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
-public class GeneralThreadedServer<T extends GeneralHandler> {
+public class ThreadedServer {
 	
 	int port;
-	Class<T> serverHandlerClass;
+	AppHandler serverHandler;
+	Executor pool = Executors.newCachedThreadPool();
 	
-	public GeneralThreadedServer(int port, Class<T> serverHandlerClass) {
+	public ThreadedServer(int port, AppHandler serverHandler) {
 		this.port = port;
-		this.serverHandlerClass = serverHandlerClass;
+		this.serverHandler = serverHandler;
 	}
 	
 	public void start() {
@@ -25,9 +27,8 @@ public class GeneralThreadedServer<T extends GeneralHandler> {
 			while (true) {
 				Socket clientSocket = serverSocket.accept();
 				
-				Constructor<T> constructor = serverHandlerClass.getConstructor(new Class[] {Socket.class});
-				T clientHandler = constructor.newInstance(new Object[] {clientSocket});
-				new Thread(clientHandler).start();
+				serverHandler.setSocket(clientSocket);
+				pool.execute(serverHandler);
 			}
 			
 		} catch (UnknownHostException e) {
