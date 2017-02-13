@@ -1,0 +1,28 @@
+package com.chriswlucas.measure;
+
+import com.chriswlucas.client_server_arch.Client;
+
+public class MeasureClient {
+	
+	public static void main(String[] args) {
+		
+		if (args.length != 2) {
+			System.err.println("Invalid number of arguments");
+			System.err.println("Usage: java EchoClient <hostname> <port>");
+			System.exit(1);
+		}
+		
+		String hostname = args[0];
+		int port = 0;
+		try {
+			port = Integer.parseInt(args[1]);
+		} catch (Exception e) {
+			System.err.println("Port must be an integer");
+			System.exit(1);
+		}
+	
+		new Client(hostname, port, new MeasureClientHandler()).start();
+		
+	}
+	
+}
