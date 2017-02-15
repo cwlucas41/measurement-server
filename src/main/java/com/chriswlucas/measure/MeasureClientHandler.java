@@ -3,70 +3,82 @@ package com.chriswlucas.measure;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import com.chriswlucas.client_server_arch.AppHandler;
+import com.chriswlucas.measure.message.*;
+
 
 public class MeasureClientHandler extends AppHandler{
 	
-	private PrintWriter socketOut;
-	private BufferedReader socketIn;
-	
-	String mtype;
-	int probes;
-	int msize;
+	private long tempTime;
+	private List<Long> rtts;
 
-	public void run() {
-		
+	public void run() {		
 		try {
 			BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));
-			socketOut = new PrintWriter(getSocket().getOutputStream(), true);
-			socketIn = new BufferedReader(new InputStreamReader(getSocket().getInputStream()));
+			String line = stdin.readLine();
+			if (line.equals(line.trim())) {
+				System.out.println("true");
+			}				
+			CSPMessage cspm = new CSPMessage(line);
+
+			handleCSP(cspm);
+			System.err.println("START MP");
+			handleMP(cspm.getProbes(), generatePayload(cspm.getPayloadSize()));
+			System.err.println("START CTP");
+			handleCTP();
 			
-			String line;
-			while ((line = stdin.readLine()) != null) {
-				
-				try {
-				
-				sendCSPRequest(line);
-				handleCSPResponse();
-				
-				} catch (IllegalArgumentException e) {
-					System.out.println(e.getMessage());
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-				
-			}
-		} catch (IOException e) {
+		} catch (IllegalArgumentException e) {
+			System.out.println(e.getMessage());
 			e.printStackTrace();
-		} catch (IllegalStateException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
+		}		
+	}
+	
+	private void handleCSP(CSPMessage cspm) throws IOException {
+		sendLine(cspm.toString());
+		String response = readLine();
+	}
+	
+	private void handleMP(int probes, String payload) throws IOException {	
+		
+		rtts = new ArrayList<Long>();
+		for (int i = 0; i < probes; i++) {
+			
+			writeAndTime(new MPMessage(i+1, payload));
+			long start = tempTime;
+			
+			readAndTime();
+			long stop = tempTime;
+			
+			rtts.add(stop-start);
 		}
 	}
 	
-	void parseCSPRequest(String request) throws IllegalArgumentException {
-		
-		MeasureProtocol.parseCSPMessage(request);
-		
-		String[] fields = request.split(" ");
-		
-		mtype = fields[1];
-		
-		try {
-			probes = Integer.parseInt(fields[2]);
-			msize = Integer.parseInt(fields[3]);
-		} catch (NumberFormatException e) {
-			throw new IllegalArgumentException("One of the numbers did not parse");
-		}
+	private void handleCTP() throws IOException {
+		sendLine(new CTPMessage().toString());
+		String response = readLine();
+		close();
 	}
 	
-	private void sendCSPRequest(String request) {
-		socketOut.println(request);
+	synchronized void writeAndTime(Message message) {
+		sendLine(message.toString());
+		tempTime = System.currentTimeMillis();
 	}
 	
-	private void handleCSPResponse() throws IOException {
-		String response = socketIn.readLine();
-		System.err.println(response);
+	synchronized String readAndTime() throws IOException {
+		String response = readLine();
+		tempTime = System.currentTimeMillis();
+		return response;
+	}
+	
+	String generatePayload(int msize) {
+		char[] payloadArray = new char[msize];
+		Arrays.fill(payloadArray, 'g');
+		return new String(payloadArray);
 	}
 }
