@@ -1,5 +1,8 @@
 package com.chriswlucas.client_server_arch;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
@@ -20,7 +23,8 @@ public class Client {
 		try {
 			clientSocket = new Socket(hostname, port);
 			
-			clientHandler.setSocket(clientSocket);	
+			clientHandler.setWriter(new PrintWriter(clientSocket.getOutputStream(), true));
+			clientHandler.setReader(new BufferedReader(new InputStreamReader(clientSocket.getInputStream())));
 			clientHandler.run();
 			
 		} catch (UnknownHostException e) {

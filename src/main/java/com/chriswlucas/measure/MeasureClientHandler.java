@@ -26,9 +26,7 @@ public class MeasureClientHandler extends AppHandler{
 			CSPMessage cspm = new CSPMessage(line);
 
 			handleCSP(cspm);
-			System.err.println("START MP");
 			handleMP(cspm.getProbes(), generatePayload(cspm.getPayloadSize()));
-			System.err.println("START CTP");
 			handleCTP();
 			
 		} catch (IllegalArgumentException e) {
@@ -62,7 +60,6 @@ public class MeasureClientHandler extends AppHandler{
 	private void handleCTP() throws IOException {
 		sendLine(new CTPMessage().toString());
 		String response = readLine();
-		close();
 	}
 	
 	synchronized void writeAndTime(Message message) {

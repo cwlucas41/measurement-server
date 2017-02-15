@@ -16,9 +16,7 @@ public class MeasureServerHandler extends AppHandler {
 		try {
 			
 			handleCSP();
-			System.err.println("START MP");
 			handleMP();
-			System.err.println("START CTP");
 			handleCTP();
 			
 		} catch (IllegalArgumentException e) {
@@ -37,7 +35,7 @@ public class MeasureServerHandler extends AppHandler {
 		probes = message.getProbes();
 		payloadSize = message.getPayloadSize();
 		delay = message.getDelay();
-		sendLine("200 OK: Ready\n");
+		sendLine("200 OK: Ready");
 	}
 	
 	void handleMP() throws IOException, InterruptedException, IllegalArgumentException {
@@ -57,7 +55,7 @@ public class MeasureServerHandler extends AppHandler {
 	
 	void handleCTP() throws IOException, IllegalArgumentException {
 		new CTPMessage(readLine());
-		sendLine("200 OK: Closing Connection\n");
+		sendLine("200 OK: Closing Connection");
 	}
 
 }
