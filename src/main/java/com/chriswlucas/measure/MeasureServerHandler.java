@@ -41,12 +41,9 @@ public class MeasureServerHandler extends AppHandler {
 	void handleMP() throws IOException, InterruptedException, IllegalArgumentException {
 		for (int i = 0; i < probes; i++) {
 			MPMessage message = new MPMessage(readLine());
-			
-			System.err.println("Seq: " + (i+1) + " " + message.getSequenceNumber());
 			if (message.getSequenceNumber() == (i+1) && message.getPayload().length() == payloadSize) {
 				Thread.sleep(delay);
 				sendLine(message.toString());
-				System.err.println("Echo: " + message.toString());
 			} else {
 				throw new IllegalArgumentException(message.getErrorMessage());
 			}

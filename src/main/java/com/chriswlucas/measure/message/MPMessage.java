@@ -18,7 +18,6 @@ public class MPMessage extends Message {
 			throw new IllegalArgumentException(getErrorMessage());
 		}
 		payload = fields[2];
-		System.err.println(message);
 		this.message = message;
 	}
 	

@@ -6,13 +6,17 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
 import com.chriswlucas.client_server_arch.AppHandler;
 import com.chriswlucas.measure.message.*;
-
+import com.chriswlucas.measure.message.CSPMessage.MeasureType;
 
 public class MeasureClientHandler extends AppHandler{
 	
+	int probes;
+	int payloadSize;
+	MeasureType mtype;
 	private long tempTime;
 	private List<Long> rtts;
 
@@ -20,14 +24,17 @@ public class MeasureClientHandler extends AppHandler{
 		try {
 			BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));
 			String line = stdin.readLine();
-			if (line.equals(line.trim())) {
-				System.out.println("true");
-			}				
+			
 			CSPMessage cspm = new CSPMessage(line);
-
+			probes = cspm.getProbes();
+			payloadSize = cspm.getPayloadSize();
+			mtype = cspm.getType();
+			
 			handleCSP(cspm);
-			handleMP(cspm.getProbes(), generatePayload(cspm.getPayloadSize()));
+			handleMP(probes, generatePayload(payloadSize));
 			handleCTP();
+			
+			System.out.println(calculateResult(mtype));
 			
 		} catch (IllegalArgumentException e) {
 			System.out.println(e.getMessage());
@@ -35,6 +42,18 @@ public class MeasureClientHandler extends AppHandler{
 		} catch (Exception e) {
 			e.printStackTrace();
 		}		
+	}
+	
+	double calculateResult(MeasureType type) {	
+		double averageRTTSeconds = rtts.stream().mapToDouble(a -> a).average().getAsDouble() / 1000;
+		
+		if (type == MeasureType.RTT) {
+			return averageRTTSeconds;
+		} else if (type == MeasureType.TPUT) {
+			return payloadSize / averageRTTSeconds;
+		} else {
+			throw new IllegalArgumentException();
+		}
 	}
 	
 	private void handleCSP(CSPMessage cspm) throws IOException {
@@ -46,13 +65,10 @@ public class MeasureClientHandler extends AppHandler{
 		
 		rtts = new ArrayList<Long>();
 		for (int i = 0; i < probes; i++) {
-			
 			writeAndTime(new MPMessage(i+1, payload));
 			long start = tempTime;
-			
-			readAndTime();
+			String response = readAndTime();
 			long stop = tempTime;
-			
 			rtts.add(stop-start);
 		}
 	}

@@ -39,15 +39,13 @@ public abstract class AppHandler implements Runnable{
 	}
 	
 	public void sendLine(String line) {
-		line = line.trim();
+		line = line.trim().toLowerCase();
 		getWriter().println(line);
-		System.out.println("Sent: " + line);
 	}
 	
 	public String readLine() throws IOException {
 		String line = getReader().readLine();
-		System.out.println("Rcvd: " + line);
-		return line.trim();
+		return line.trim().toLowerCase();
 	}
 
 }

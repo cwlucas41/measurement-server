@@ -2,7 +2,7 @@ package com.chriswlucas.measure.message;
 
 public class CSPMessage extends Message{
 	
-	private String type;
+	private MeasureType type;
 	private int probes;
 	private int payloadSize;
 	private int delay;
@@ -15,7 +15,15 @@ public class CSPMessage extends Message{
 		super(message);
 		
 		String[] fields = message.split("\\s");
-		type = fields[1];
+		
+		if (fields[1].equals("rtt")) {
+			type = MeasureType.RTT;
+		} else if (fields[1].equals("tput")) {
+			type = MeasureType.TPUT;
+		} else {
+			throw new IllegalArgumentException(getErrorMessage());
+		}
+		
 		try {
 			probes = Integer.parseInt(fields[2]);
 			payloadSize = Integer.parseInt(fields[3]);
@@ -26,8 +34,12 @@ public class CSPMessage extends Message{
 		
 		this.message = message;
 	}
+	
+	public enum MeasureType {
+		RTT, TPUT
+	}
 
-	public String getType() {
+	public MeasureType getType() {
 		return type;
 	}
 
