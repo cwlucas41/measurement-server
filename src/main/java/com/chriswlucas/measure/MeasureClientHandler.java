@@ -6,7 +6,6 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Stream;
 
 import com.chriswlucas.client_server_arch.AppHandler;
 import com.chriswlucas.measure.message.*;
@@ -14,34 +13,31 @@ import com.chriswlucas.measure.message.CSPMessage.MeasureType;
 
 public class MeasureClientHandler extends AppHandler{
 	
-	int probes;
-	int payloadSize;
-	MeasureType mtype;
+	private int probes;
+	private int payloadSize;
+	private MeasureType mtype;
 	private long tempTime;
 	private List<Long> rtts;
+	private BufferedReader userIn = new BufferedReader(new InputStreamReader(System.in));
 
 	public void run() {		
 		try {
-			BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));
-			String line = stdin.readLine();
-			
-			CSPMessage cspm = new CSPMessage(line);
-			probes = cspm.getProbes();
-			payloadSize = cspm.getPayloadSize();
-			mtype = cspm.getType();
-			
-			handleCSP(cspm);
-			handleMP(probes, generatePayload(payloadSize));
-			handleCTP();
-			
-			System.out.println(calculateResult(mtype));
+
+			if (handleCSP() && 
+					handleMP(probes, generatePayload(payloadSize)) &&
+					handleCTP()) {
+				System.out.println(calculateResult(mtype));
+			}
 			
 		} catch (IllegalArgumentException e) {
 			System.out.println(e.getMessage());
-			e.printStackTrace();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}		
+	}
+	
+	void setUserIn(BufferedReader reader) {
+		userIn = reader;
 	}
 	
 	double calculateResult(MeasureType type) {	
@@ -52,30 +48,53 @@ public class MeasureClientHandler extends AppHandler{
 		} else if (type == MeasureType.TPUT) {
 			return payloadSize / averageRTTSeconds;
 		} else {
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("Invalid measurment type");
 		}
 	}
 	
-	private void handleCSP(CSPMessage cspm) throws IOException {
+	private boolean handleCSP() throws IOException {
+		String line = userIn.readLine();
+		CSPMessage cspm = new CSPMessage(line);
+		probes = cspm.getProbes();
+		payloadSize = cspm.getPayloadSize();
+		mtype = cspm.getType();
 		sendLine(cspm.toString());
 		String response = readLine();
+		if (response.contains("404 ERROR:")) {
+			System.out.println("Invalid response for CSP");
+			return false;
+		} else {
+			return true;
+		}
 	}
 	
-	private void handleMP(int probes, String payload) throws IOException {	
+	private boolean handleMP(int probes, String payload) throws IOException {	
 		
 		rtts = new ArrayList<Long>();
 		for (int i = 0; i < probes; i++) {
-			writeAndTime(new MPMessage(i+1, payload));
+			MPMessage message = new MPMessage(i+1, payload);
+			writeAndTime(message);
 			long start = tempTime;
 			String response = readAndTime();
 			long stop = tempTime;
 			rtts.add(stop-start);
+			if (response.contains("404 ERROR:") || !response.equals(message.toString())) {
+				System.out.println("Invalid response for MP");
+				return false;
+			}
 		}
+		return true;
 	}
 	
-	private void handleCTP() throws IOException {
+	private boolean handleCTP() throws IOException {
 		sendLine(new CTPMessage().toString());
 		String response = readLine();
+		if (response.contains("200 OK:")) {
+			return true;
+		} else {
+			System.out.println("Invalid response for CTP");
+			return false;
+		}
 	}
 	
 	synchronized void writeAndTime(Message message) {
