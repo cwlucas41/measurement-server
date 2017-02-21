@@ -37,62 +37,64 @@ public class MeasureClientHandlerIntegrationTest {
 	
 	@Test
 	public void valid3() throws IOException {
-		handler.setUserIn(new BufferedReader(new StringReader("s rtt 3 5 0")));
+		handler.setUserIn(new BufferedReader(new StringReader("s rtt 3 1 0")));
 		
-		expOutWriter.println("s rtt 3 5 0");
-		expOutWriter.println("m 1 ggggg");
-		expOutWriter.println("m 2 ggggg");
-		expOutWriter.println("m 3 ggggg");
+		expOutWriter.println("s rtt 3 1 0");
+		expOutWriter.println("m 1 g");
+		expOutWriter.println("m 2 g");
+		expOutWriter.println("m 3 g");
 		expOutWriter.println("t");
 			
 		inWriter.println("200 OK: Ready");
-		inWriter.println("m 1 ggggg");
-		inWriter.println("m 2 ggggg");
-		inWriter.println("m 3 ggggg");
+		inWriter.println("m 1 g");
+		inWriter.println("m 2 g");
+		inWriter.println("m 3 g");
 		inWriter.println("200 OK: Closing Connection");
 	}
 	
 	@Test
 	public void CSPnetworkError() throws IOException {		
-		handler.setUserIn(new BufferedReader(new StringReader("s rtt 3 5 0")));
+		handler.setUserIn(new BufferedReader(new StringReader("s rtt 3 1 0")));
 		
-		expOutWriter.println("s rtt 3 5 0");
+		expOutWriter.println("s rtt 3 1 0");
 			
 		inWriter.println("404 ERROR: Invalid Connection Setup Message");
 	}
 	
 	@Test
 	public void invalidCSP() throws IOException {		
-		handler.setUserIn(new BufferedReader(new StringReader("wrong rtt 3 5 0")));			
+		handler.setUserIn(new BufferedReader(new StringReader("wrong rtt 3 1 0")));	
+		expOutWriter.println("hack");
+		actOutWriter.println("hack");
 	}
 	
 	@Test
 	public void invalidMPMessage() throws IOException {
-		handler.setUserIn(new BufferedReader(new StringReader("s rtt 3 5 0")));
+		handler.setUserIn(new BufferedReader(new StringReader("s rtt 3 1 0")));
 		
-		expOutWriter.println("s rtt 3 5 0");
-		expOutWriter.println("m 1 ggggg");
-		expOutWriter.println("m 2 ggggg");
+		expOutWriter.println("s rtt 3 1 0");
+		expOutWriter.println("m 1 g");
+		expOutWriter.println("m 2 g");
 			
 		inWriter.println("200 OK: Ready");
-		inWriter.println("m 1 ggggg");
+		inWriter.println("m 1 g");
 		inWriter.println("404 ERROR: Invalid Measurement Message");
 	}
 	
 	@Test
 	public void invalidCTPMessage() throws IOException {
-		handler.setUserIn(new BufferedReader(new StringReader("s rtt 3 5 0")));
+		handler.setUserIn(new BufferedReader(new StringReader("s rtt 3 1 0")));
 		
-		expOutWriter.println("s rtt 3 5 0");
-		expOutWriter.println("m 1 ggggg");
-		expOutWriter.println("m 2 ggggg");
-		expOutWriter.println("m 3 ggggg");
+		expOutWriter.println("s rtt 3 1 0");
+		expOutWriter.println("m 1 g");
+		expOutWriter.println("m 2 g");
+		expOutWriter.println("m 3 g");
 		expOutWriter.println("wrong");
 			
 		inWriter.println("200 OK: Ready");
-		inWriter.println("m 1 ggggg");
-		inWriter.println("m 2 ggggg");
-		inWriter.println("m 3 ggggg");
+		inWriter.println("m 1 g");
+		inWriter.println("m 2 g");
+		inWriter.println("m 3 g");
 		inWriter.println("404 ERROR: Invalid Connection Termination Message");
 	}
 	
@@ -120,6 +122,8 @@ public class MeasureClientHandlerIntegrationTest {
 	}
 	
 	void compareFiles(File actual, File f2) {
+		int i = 0;
+		
 		try (
 			BufferedReader r1 = new BufferedReader(new FileReader(actual));
 			BufferedReader r2 = new BufferedReader(new FileReader(f2));
@@ -132,9 +136,14 @@ public class MeasureClientHandlerIntegrationTest {
 					System.out.println("Exp: " + l2);
 					fail();
 				}
+				i++;
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
+		}
+		
+		if (i == 0) {
+			fail();
 		}
 	}
 

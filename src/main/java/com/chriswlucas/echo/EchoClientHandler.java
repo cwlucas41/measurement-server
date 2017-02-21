@@ -6,6 +6,13 @@ import java.io.InputStreamReader;
 
 import com.chriswlucas.client_server_arch.AppHandler;
 
+/**
+ * Runnable containing the business logic for the echo client. Reads lines from stdin
+ * and prints them to the socket, then reads line from the socket and prints
+ * to stdout.
+ * @author cwlucas41
+ *
+ */
 public class EchoClientHandler extends AppHandler{
 
 	public void run() {

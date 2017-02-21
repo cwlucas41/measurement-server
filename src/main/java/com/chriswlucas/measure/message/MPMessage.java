@@ -1,5 +1,10 @@
 package com.chriswlucas.measure.message;
 
+/**
+ * Message Phase message - second phase of measurment server.
+ * @author cwlucas41
+ *
+ */
 public class MPMessage extends Message {
 	
 	private static final String format = "m\\s\\d+\\s\\w+";
@@ -9,6 +14,11 @@ public class MPMessage extends Message {
 	private String payload;
 	private String message;
 
+	/**
+	 * Creates message from a string and checks string for valid format
+	 * @param message
+	 * @throws IllegalArgumentException
+	 */
 	public MPMessage(String message) throws IllegalArgumentException {
 		super(message);
 		String[] fields = message.split("\\s");	
@@ -21,16 +31,29 @@ public class MPMessage extends Message {
 		this.message = message;
 	}
 	
+	/**
+	 * Creates message from parameters and creates proper string
+	 * @param sequenceNumber
+	 * @param payload
+	 */
 	public MPMessage(int sequenceNumber, String payload) {
 		this.sequenceNumber = sequenceNumber;
 		this.payload = payload;
 		this.message = "m " + sequenceNumber + " " + payload + '\n';
 	}
 
+	/**
+	 * Gets the sequence number for the message.
+	 * @return
+	 */
 	public int getSequenceNumber() {
 		return sequenceNumber;
 	}
 
+	/**
+	 * Gets the payload fort the message
+	 * @return
+	 */
 	public String getPayload() {
 		return payload;
 	}

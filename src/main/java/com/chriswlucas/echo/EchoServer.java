@@ -2,6 +2,12 @@ package com.chriswlucas.echo;
 
 import com.chriswlucas.client_server_arch.ThreadedServer;
 
+/**
+ * Main class of server for echo assignment. User must supply
+ * a port number via command line args.
+ * @author cwlucas41
+ *
+ */
 public class EchoServer {
 
 	public static void main(String[] args) {

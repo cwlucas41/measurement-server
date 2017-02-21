@@ -12,26 +12,22 @@ public class CSPMessageTest {
 	CSPMessage m;
 	
 	@Test
-	public void checkCSPValidMessage() {
-		m = new CSPMessage("s rtt 3 4 5");
+	public void checkCSPValidRttMessage() {
+		m = new CSPMessage("s rtt 3 1000 5");
 		assertEquals(m.getType(), MeasureType.RTT);
 		assertEquals(m.getProbes(), 3);
-		assertEquals(m.getPayloadSize(), 4);
+		assertEquals(m.getPayloadSize(), 1000);
 		assertEquals(m.getDelay(), 5);
 		assertNotNull(m.toString());
-		
-		m = new CSPMessage("s tput 10 11 12");
+	}
+	
+	@Test
+	public void checkCSPValidTputMessage() {
+		m = new CSPMessage("s tput 10 16K 12");
 		assertEquals(m.getType(), MeasureType.TPUT);
 		assertEquals(m.getProbes(), 10);
-		assertEquals(m.getPayloadSize(), 11);
+		assertEquals(m.getPayloadSize(), 16000);
 		assertEquals(m.getDelay(), 12);
-		assertNotNull(m.toString());
-		
-		m = new CSPMessage("s rtt\t3\r4\n5");
-		assertEquals(m.getType(), MeasureType.RTT);
-		assertEquals(m.getProbes(), 3);
-		assertEquals(m.getPayloadSize(), 4);
-		assertEquals(m.getDelay(), 5);	
 		assertNotNull(m.toString());
 	}
 	
@@ -56,8 +52,13 @@ public class CSPMessageTest {
 	}
 	
 	@Test(expected=IllegalArgumentException.class)
-	public void checkCSPInvalidMsize() {
-		new CSPMessage("s rtt 3 wrong 5");
+	public void checkCSPInvalidRttMsize() {
+		new CSPMessage("s rtt 3 3 5");
+	}
+	
+	@Test(expected=IllegalArgumentException.class)
+	public void checkCSPInvalidTputMsize() {
+		new CSPMessage("s tput 3 3K 5");
 	}
 	
 	@Test(expected=IllegalArgumentException.class)

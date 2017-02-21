@@ -6,19 +6,34 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
+/**
+ * Generic client that is injected with an AppHandler containing the client's
+ * business logic. This class handles the client's communication logic.
+ * @author cwlucas41
+ *
+ */
 public class Client {
 	
-	String hostname;
-	int port;
-	AppHandler clientHandler;
-	Socket clientSocket;
+	private String hostname;
+	private int port;
+	private AppHandler clientHandler;
+	private Socket clientSocket;
 
+	/**
+	 * Constructs Client with specified arguments
+	 * @param hostname
+	 * @param port
+	 * @param clientHandler
+	 */
 	public Client(String hostname, int port, AppHandler clientHandler) {
 		this.hostname = hostname;
 		this.port = port;
 		this.clientHandler = clientHandler;
 	}
 	
+	/**
+	 * Starts the handler runnable
+	 */
 	public void start() {
 		try {
 			clientSocket = new Socket(hostname, port);

@@ -36,62 +36,62 @@ public class MeasureServerHandlerIntegrationTest {
 	
 	@Test
 	public void valid3() {
-		inWriter.println("s rtt 3 5 0");
-		inWriter.println("m 1 ggggg");
-		inWriter.println("m 2 ggggg");
-		inWriter.println("m 3 ggggg");
+		inWriter.println("s rtt 3 1 0");
+		inWriter.println("m 1 g");
+		inWriter.println("m 2 g");
+		inWriter.println("m 3 g");
 		inWriter.println("t");
 		
 		expOutWriter.println("200 OK: Ready");
-		expOutWriter.println("m 1 ggggg");
-		expOutWriter.println("m 2 ggggg");
-		expOutWriter.println("m 3 ggggg");
+		expOutWriter.println("m 1 g");
+		expOutWriter.println("m 2 g");
+		expOutWriter.println("m 3 g");
 		expOutWriter.println("200 OK: Closing Connection");
 	}
 	
 	@Test
 	public void invalidCSP() {
-		inWriter.println("wrong rtt 3 5 0");
+		inWriter.println("wrong rtt 3 1 0");
 		
 		expOutWriter.println("404 ERROR: Invalid Connection Setup Message");
 	}
 	
 	@Test
 	public void invalidMPSeqNum() {
-		inWriter.println("s rtt 3 5 0");
-		inWriter.println("m 1 ggggg");
-		inWriter.println("m 3 ggggg");
+		inWriter.println("s rtt 3 1 0");
+		inWriter.println("m 1 g");
+		inWriter.println("m 3 g");
 		
 		expOutWriter.println("200 OK: Ready");
-		expOutWriter.println("m 1 ggggg");
+		expOutWriter.println("m 1 g");
 		expOutWriter.println("404 ERROR: Invalid Measurement Message");
 	}
 	
 	@Test
 	public void invalidMPMissingMessage() {
-		inWriter.println("s rtt 3 5 0");
-		inWriter.println("m 1 ggggg");
-		inWriter.println("m 2 ggggg");
+		inWriter.println("s rtt 3 1 0");
+		inWriter.println("m 1 g");
+		inWriter.println("m 2 g");
 		inWriter.println("wrong");
 		
 		expOutWriter.println("200 OK: Ready");
-		expOutWriter.println("m 1 ggggg");
-		expOutWriter.println("m 2 ggggg");
+		expOutWriter.println("m 1 g");
+		expOutWriter.println("m 2 g");
 		expOutWriter.println("404 ERROR: Invalid Measurement Message");
 	}
 	
 	@Test
 	public void invalidCTPMessage() {
-		inWriter.println("s rtt 3 5 0");
-		inWriter.println("m 1 ggggg");
-		inWriter.println("m 2 ggggg");
-		inWriter.println("m 3 ggggg");
+		inWriter.println("s rtt 3 1 0");
+		inWriter.println("m 1 g");
+		inWriter.println("m 2 g");
+		inWriter.println("m 3 g");
 		inWriter.println("wrong");
 		
 		expOutWriter.println("200 OK: Ready");
-		expOutWriter.println("m 1 ggggg");
-		expOutWriter.println("m 2 ggggg");
-		expOutWriter.println("m 3 ggggg");
+		expOutWriter.println("m 1 g");
+		expOutWriter.println("m 2 g");
+		expOutWriter.println("m 3 g");
 		expOutWriter.println("404 ERROR: Invalid Connection Termination Message");
 	}
 	

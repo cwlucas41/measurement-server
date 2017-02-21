@@ -6,17 +6,34 @@ import java.net.UnknownHostException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
+/**
+ * Generic threaded server that is injected with and AppHandler containing
+ * the business logic for the server. This class handles the communication
+ * logic for the server. The AppHandlers are started as different threads
+ * with different accepted connections.
+ * @author cwlucas41
+ *
+ */
 public class ThreadedServer {
 	
-	int port;
-	AppHandler serverHandler;
-	Executor pool = Executors.newCachedThreadPool();
+	private int port;
+	private AppHandler serverHandler;
+	private Executor pool = Executors.newCachedThreadPool();
 	
+	/**
+	 * Creates server with supplied hanlder and port
+	 * @param port
+	 * @param serverHandler
+	 */
 	public ThreadedServer(int port, AppHandler serverHandler) {
 		this.port = port;
 		this.serverHandler = serverHandler;
 	}
 	
+	/**
+	 * Start the server. The server will accept new connections and handle
+	 * the connection with the specified handler
+	 */
 	public void start() {
 		
 		ServerSocket serverSocket;

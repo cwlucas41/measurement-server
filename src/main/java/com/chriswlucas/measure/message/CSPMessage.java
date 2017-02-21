@@ -1,5 +1,10 @@
 package com.chriswlucas.measure.message;
 
+/**
+ * Connection Setup Phase message - first message phase of measurment server.
+ * @author cwlucas41
+ *
+ */
 public class CSPMessage extends Message{
 	
 	private MeasureType type;
@@ -8,9 +13,15 @@ public class CSPMessage extends Message{
 	private int delay;
 	private String message;
 	
-	private static final String format = "s\\s(rtt||tput)\\s\\d+\\s\\d+\\s\\d+";
+	private static final String rttFormat = "s\\srtt\\s\\d+\\s\\d+\\s\\d+";
+	private static final String tputFormat = "s\\stput\\s\\d+\\s\\d+K\\s\\d+";
 	private static final String errorMessage = "Invalid Connection Setup Message";
 
+	/**
+	 * Constructs message from parsed String. Checks if String is valid.
+	 * @param message
+	 * @throws IllegalArgumentException
+	 */
 	public CSPMessage(String message) throws IllegalArgumentException {
 		super(message);
 		
@@ -26,31 +37,69 @@ public class CSPMessage extends Message{
 		
 		try {
 			probes = Integer.parseInt(fields[2]);
-			payloadSize = Integer.parseInt(fields[3]);
 			delay = Integer.parseInt(fields[4]);
 		} catch (NumberFormatException e) {
 			throw new IllegalArgumentException(getErrorMessage());
 		}
 		
+		// payload field is different for different message types
+		String rawPayloadSize = fields[3];
+		if (type == MeasureType.TPUT) {
+			String withoutK = rawPayloadSize.substring(0,  rawPayloadSize.length()-1);
+			payloadSize = Integer.parseInt(withoutK);
+			if (!(payloadSize == 1 || payloadSize == 2 || payloadSize == 4 ||
+					payloadSize == 8 || payloadSize == 16 || payloadSize == 32)) {
+				throw new IllegalArgumentException(getErrorMessage());
+			}
+			payloadSize *= 1000;
+		} else {
+			payloadSize = Integer.parseInt(rawPayloadSize);
+			if (!(payloadSize == 1 || payloadSize == 100 || payloadSize == 200 ||
+					payloadSize == 400 || payloadSize == 800 || payloadSize == 1000)) {
+				throw new IllegalArgumentException(getErrorMessage());
+			}
+		}
+		
 		this.message = message;
 	}
 	
+	/**
+	 * Enumerates the types of CSP messages
+	 * @author cwlucas41
+	 *
+	 */
 	public enum MeasureType {
 		RTT, TPUT
 	}
 
+	/**
+	 * gets the messages MeasureType
+	 * @return
+	 */
 	public MeasureType getType() {
 		return type;
 	}
 
+	/**
+	 * Gets the number of probes to be sent
+	 * @return
+	 */
 	public int getProbes() {
 		return probes;
 	}
 
+	/**
+	 * Gets the byte size of the payload of messages
+	 * @return
+	 */
 	public int getPayloadSize() {
 		return payloadSize;
 	}
 	
+	/**
+	 * Gets the server delay for the messages
+	 * @return
+	 */
 	public int getDelay() {
 		return delay;
 	}
@@ -62,7 +111,7 @@ public class CSPMessage extends Message{
 
 	@Override
 	String getMessageFormat() {
-		return format;
+		return rttFormat + "||" + tputFormat;
 	}
 
 	@Override
