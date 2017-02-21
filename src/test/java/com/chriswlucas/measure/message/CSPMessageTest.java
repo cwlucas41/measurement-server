@@ -12,7 +12,7 @@ public class CSPMessageTest {
 	CSPMessage m;
 	
 	@Test
-	public void checkCSPValidRttMessage() {
+	public void checkCSPValidRttMessageWithDelay() {
 		m = new CSPMessage("s rtt 3 1000 5");
 		assertEquals(m.getType(), MeasureType.RTT);
 		assertEquals(m.getProbes(), 3);
@@ -22,12 +22,32 @@ public class CSPMessageTest {
 	}
 	
 	@Test
-	public void checkCSPValidTputMessage() {
+	public void checkCSPValidRttMessageWithoutDelay() {
+		m = new CSPMessage("s rtt 3 1000");
+		assertEquals(m.getType(), MeasureType.RTT);
+		assertEquals(m.getProbes(), 3);
+		assertEquals(m.getPayloadSize(), 1000);
+		assertEquals(m.getDelay(), 0);
+		assertNotNull(m.toString());
+	}
+	
+	@Test
+	public void checkCSPValidTputMessageWithDelay() {
 		m = new CSPMessage("s tput 10 16K 12");
 		assertEquals(m.getType(), MeasureType.TPUT);
 		assertEquals(m.getProbes(), 10);
 		assertEquals(m.getPayloadSize(), 16000);
 		assertEquals(m.getDelay(), 12);
+		assertNotNull(m.toString());
+	}
+	
+	@Test
+	public void checkCSPValidTputMessageWithoutDelay() {
+		m = new CSPMessage("s tput 10 16K");
+		assertEquals(m.getType(), MeasureType.TPUT);
+		assertEquals(m.getProbes(), 10);
+		assertEquals(m.getPayloadSize(), 16000);
+		assertEquals(m.getDelay(), 0);
 		assertNotNull(m.toString());
 	}
 	

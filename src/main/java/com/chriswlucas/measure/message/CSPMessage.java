@@ -13,8 +13,8 @@ public class CSPMessage extends Message{
 	private int delay;
 	private String message;
 	
-	private static final String rttFormat = "s\\srtt\\s\\d+\\s\\d+\\s\\d+";
-	private static final String tputFormat = "s\\stput\\s\\d+\\s\\d+K\\s\\d+";
+	private static final String rttFormat = "s\\srtt\\s\\d+\\s\\d+(\\s\\d+)?";
+	private static final String tputFormat = "s\\stput\\s\\d+\\s\\d+K(\\s\\d+)?";
 	private static final String errorMessage = "Invalid Connection Setup Message";
 
 	/**
@@ -37,7 +37,11 @@ public class CSPMessage extends Message{
 		
 		try {
 			probes = Integer.parseInt(fields[2]);
-			delay = Integer.parseInt(fields[4]);
+			if (fields.length == 5) {
+				delay = Integer.parseInt(fields[4]);
+			} else {
+				delay = 0;
+			}
 		} catch (NumberFormatException e) {
 			throw new IllegalArgumentException(getErrorMessage());
 		}
