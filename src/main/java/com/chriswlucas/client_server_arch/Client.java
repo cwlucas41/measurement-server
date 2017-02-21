@@ -12,23 +12,23 @@ import java.net.UnknownHostException;
  * @author cwlucas41
  *
  */
-public class Client {
+public class Client <T extends AppHandler> {
 	
 	private String hostname;
 	private int port;
-	private AppHandler clientHandler;
+	private Class<T> clientHandlerClass;
 	private Socket clientSocket;
 
 	/**
 	 * Constructs Client with specified arguments
 	 * @param hostname
 	 * @param port
-	 * @param clientHandler
+	 * @param clientHandlerClass
 	 */
-	public Client(String hostname, int port, AppHandler clientHandler) {
+	public Client(String hostname, int port, Class<T> clientHandlerClass) {
 		this.hostname = hostname;
 		this.port = port;
-		this.clientHandler = clientHandler;
+		this.clientHandlerClass = clientHandlerClass;
 	}
 	
 	/**
@@ -38,9 +38,18 @@ public class Client {
 		try {
 			clientSocket = new Socket(hostname, port);
 			
-			clientHandler.setWriter(new PrintWriter(clientSocket.getOutputStream(), true));
-			clientHandler.setReader(new BufferedReader(new InputStreamReader(clientSocket.getInputStream())));
-			clientHandler.run();
+			// reflection to create new instance of handler class and run it
+			clientHandlerClass.getConstructor(
+					new Class [] {
+							BufferedReader.class, 
+							PrintWriter.class
+					}
+			).newInstance(
+					new Object [] {
+							new BufferedReader(new InputStreamReader(clientSocket.getInputStream())), 
+							new PrintWriter(clientSocket.getOutputStream(), true)
+					}
+			).run();
 			
 		} catch (UnknownHostException e) {
 			System.err.println("Invalid hostname");

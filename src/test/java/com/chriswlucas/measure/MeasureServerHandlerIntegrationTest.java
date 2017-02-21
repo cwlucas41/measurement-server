@@ -25,14 +25,17 @@ public class MeasureServerHandlerIntegrationTest {
 	
 	@Before
 	public void setup() throws IOException {
-		handler = new MeasureServerHandler();
 		in = File.createTempFile("input", ".txt");
 		actOut = File.createTempFile("actOut", ".txt");
 		expOut = File.createTempFile("expOut", ".txt");
 		expOutWriter = new PrintWriter(expOut);
 		inWriter = new PrintWriter(in);
 		actOutWriter = new PrintWriter(actOut);
-	}
+		handler = new MeasureServerHandler(
+				new BufferedReader(new FileReader(in)), 
+				actOutWriter
+		);
+}
 	
 	@Test
 	public void valid3() {
@@ -100,8 +103,6 @@ public class MeasureServerHandlerIntegrationTest {
 		
 		expOutWriter.close();
 		inWriter.close();
-		handler.setReader(new BufferedReader(new FileReader(in)));
-		handler.setWriter(actOutWriter);
 		PrintStream original = System.out;
 		PrintStream nullStream = new PrintStream(File.createTempFile("null", ".out"));
 		System.setOut(nullStream);

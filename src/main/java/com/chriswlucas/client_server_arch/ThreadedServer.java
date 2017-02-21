@@ -1,5 +1,8 @@
 package com.chriswlucas.client_server_arch;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -14,20 +17,20 @@ import java.util.concurrent.Executors;
  * @author cwlucas41
  *
  */
-public class ThreadedServer {
+public class ThreadedServer <T extends AppHandler> {
 	
 	private int port;
-	private AppHandler serverHandler;
+	private Class<T> serverHandlerClass;
 	private Executor pool = Executors.newCachedThreadPool();
 	
 	/**
 	 * Creates server with supplied hanlder and port
 	 * @param port
-	 * @param serverHandler
+	 * @param serverHandlerClass
 	 */
-	public ThreadedServer(int port, AppHandler serverHandler) {
+	public ThreadedServer(int port, Class<T> serverHandlerClass) {
 		this.port = port;
-		this.serverHandler = serverHandler;
+		this.serverHandlerClass = serverHandlerClass;
 	}
 	
 	/**
@@ -44,7 +47,19 @@ public class ThreadedServer {
 			while (true) {
 				Socket clientSocket = serverSocket.accept();
 				
-				serverHandler.setSocket(clientSocket);
+				// reflection to create new instance of handler class
+				T serverHandler = serverHandlerClass.getConstructor(
+						new Class [] {
+								BufferedReader.class, 
+								PrintWriter.class
+						}
+				).newInstance(
+						new Object [] {
+								new BufferedReader(new InputStreamReader(clientSocket.getInputStream())), 
+								new PrintWriter(clientSocket.getOutputStream(), true)
+						}
+				);
+				
 				pool.execute(serverHandler);
 			}
 			

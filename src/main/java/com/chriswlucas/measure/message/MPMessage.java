@@ -39,7 +39,7 @@ public class MPMessage extends Message {
 	public MPMessage(int sequenceNumber, String payload) {
 		this.sequenceNumber = sequenceNumber;
 		this.payload = payload;
-		this.message = "m " + sequenceNumber + " " + payload + '\n';
+		this.message = "m " + sequenceNumber + " " + payload;
 	}
 
 	/**

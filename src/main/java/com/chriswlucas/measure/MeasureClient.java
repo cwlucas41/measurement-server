@@ -21,7 +21,7 @@ public class MeasureClient {
 			System.exit(1);
 		}
 	
-		new Client(hostname, port, new MeasureClientHandler()).start();
+		new Client<MeasureClientHandler>(hostname, port, MeasureClientHandler.class).start();
 		
 	}
 	

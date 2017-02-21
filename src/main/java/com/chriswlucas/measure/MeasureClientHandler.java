@@ -3,6 +3,7 @@ package com.chriswlucas.measure;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -13,6 +14,10 @@ import com.chriswlucas.measure.message.CSPMessage.MeasureType;
 
 public class MeasureClientHandler extends AppHandler{
 	
+	public MeasureClientHandler(BufferedReader reader, PrintWriter writer) {
+		super(reader, writer);
+	}
+
 	private int probes;
 	private int payloadSize;
 	private MeasureType mtype;
@@ -78,7 +83,7 @@ public class MeasureClientHandler extends AppHandler{
 			String response = readAndTime();
 			long stop = tempTime;
 			rtts.add(stop-start);
-			if (response.contains("404 ERROR:") || !response.equals(message.toString())) {
+			if (!response.equals(message.toString())) {
 				System.out.println("Invalid response for MP");
 				return false;
 			}

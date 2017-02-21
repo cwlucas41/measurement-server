@@ -26,13 +26,16 @@ public class MeasureClientHandlerIntegrationTest {
 	
 	@Before
 	public void setup() throws IOException {
-		handler = new MeasureClientHandler();
 		in = File.createTempFile("input", ".txt");
 		actOut = File.createTempFile("actOut", ".txt");
 		expOut = File.createTempFile("expOut", ".txt");
 		expOutWriter = new PrintWriter(expOut);
 		inWriter = new PrintWriter(in);
 		actOutWriter = new PrintWriter(actOut);
+		handler = new MeasureClientHandler(
+				new BufferedReader(new FileReader(in)),
+				actOutWriter
+		);
 	}
 	
 	@Test
@@ -89,7 +92,7 @@ public class MeasureClientHandlerIntegrationTest {
 		expOutWriter.println("m 1 g");
 		expOutWriter.println("m 2 g");
 		expOutWriter.println("m 3 g");
-		expOutWriter.println("wrong");
+		expOutWriter.println("t");
 			
 		inWriter.println("200 OK: Ready");
 		inWriter.println("m 1 g");
@@ -103,8 +106,7 @@ public class MeasureClientHandlerIntegrationTest {
 		
 		expOutWriter.close();
 		inWriter.close();
-		handler.setReader(new BufferedReader(new FileReader(in)));
-		handler.setWriter(actOutWriter);
+
 		PrintStream original = System.out;
 		PrintStream nullStream = new PrintStream(File.createTempFile("null", ".out"));
 		System.setOut(nullStream);

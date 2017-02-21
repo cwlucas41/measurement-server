@@ -20,7 +20,7 @@ public class MeasureServer {
 			System.exit(1);
 		}
 		
-		new ThreadedServer(port, new MeasureServerHandler()).start();
+		new ThreadedServer<MeasureServerHandler>(port, MeasureServerHandler.class).start();
 	}
 	
 }

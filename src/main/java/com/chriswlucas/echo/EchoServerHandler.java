@@ -1,6 +1,8 @@
 package com.chriswlucas.echo;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.PrintWriter;
 
 import com.chriswlucas.client_server_arch.AppHandler;
 
@@ -11,6 +13,10 @@ import com.chriswlucas.client_server_arch.AppHandler;
  *
  */
 public class EchoServerHandler extends AppHandler {
+
+	public EchoServerHandler(BufferedReader reader, PrintWriter writer) {
+		super(reader, writer);
+	}
 
 	public void run() {
 		try {

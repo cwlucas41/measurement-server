@@ -26,7 +26,7 @@ public class EchoServer {
 			System.exit(1);
 		}
 		
-		new ThreadedServer(port, new EchoServerHandler()).start();
+		new ThreadedServer<EchoServerHandler>(port, EchoServerHandler.class).start();
 	}
 	
 }

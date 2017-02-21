@@ -1,12 +1,18 @@
 package com.chriswlucas.measure;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.PrintWriter;
 
 import com.chriswlucas.client_server_arch.AppHandler;
 import com.chriswlucas.measure.message.*;
 
 public class MeasureServerHandler extends AppHandler {
 	
+	public MeasureServerHandler(BufferedReader reader, PrintWriter writer) {
+		super(reader, writer);
+	}
+
 	int probes;
 	int payloadSize;
 	int delay;
@@ -15,9 +21,7 @@ public class MeasureServerHandler extends AppHandler {
 	public void run() {
 		try {
 			
-			handleCSP();
-			handleMP();
-			handleCTP();
+			if (handleCSP() && handleMP() && handleCTP()) {}
 			
 		} catch (IllegalArgumentException e) {
 			sendLine("404 ERROR: " + e.getMessage());
@@ -27,20 +31,28 @@ public class MeasureServerHandler extends AppHandler {
 		}
 	}
 	
-	void handleCSP() throws IOException, IllegalArgumentException {
+	boolean handleCSP() throws IOException, IllegalArgumentException {
 		
 		String m = readLine();
+		if (m == null) {
+			return false;
+		}
 		CSPMessage message = new CSPMessage(m);
 		
 		probes = message.getProbes();
 		payloadSize = message.getPayloadSize();
 		delay = message.getDelay();
 		sendLine("200 OK: Ready");
+		return true;
 	}
 	
-	void handleMP() throws IOException, InterruptedException, IllegalArgumentException {
+	boolean handleMP() throws IOException, InterruptedException, IllegalArgumentException {
 		for (int i = 0; i < probes; i++) {
-			MPMessage message = new MPMessage(readLine());
+			String line = readLine();
+			if (line == null) {
+				return false;
+			}
+			MPMessage message = new MPMessage(line);
 			if (message.getSequenceNumber() == (i+1) && message.getPayload().length() == payloadSize) {
 				Thread.sleep(delay);
 				sendLine(message.toString());
@@ -48,11 +60,17 @@ public class MeasureServerHandler extends AppHandler {
 				throw new IllegalArgumentException(message.getErrorMessage());
 			}
 		}
+		return true;
 	}
 	
-	void handleCTP() throws IOException, IllegalArgumentException {
-		new CTPMessage(readLine());
+	boolean handleCTP() throws IOException, IllegalArgumentException {
+		String line = readLine();
+		if (line == null) {
+			return false;
+		}
+		new CTPMessage(line);
 		sendLine("200 OK: Closing Connection");
+		return true;
 	}
 
 }

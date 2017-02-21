@@ -27,7 +27,7 @@ public class EchoClient {
 			System.exit(1);
 		}
 	
-		new Client(hostname, port, new EchoClientHandler()).start();
+		new Client<EchoClientHandler>(hostname, port, EchoClientHandler.class).start();
 		
 	}
 	
