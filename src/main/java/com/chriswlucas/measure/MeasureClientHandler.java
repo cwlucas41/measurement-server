@@ -76,7 +76,17 @@ public class MeasureClientHandler extends AppHandler{
 		if (type == MeasureType.RTT) {
 			return averageRTTSeconds;
 		} else if (type == MeasureType.TPUT) {
-			return payloadSize / averageRTTSeconds;
+			return payloadSize * 8 / 1000 / averageRTTSeconds;
+		} else {
+			throw new IllegalArgumentException("Invalid measurment type");
+		}
+	}
+	
+	String getUnits(MeasureType type) {
+		if (type == MeasureType.RTT) {
+			return "s";
+		} else if (type == MeasureType.TPUT) {
+			return "kbps";
 		} else {
 			throw new IllegalArgumentException("Invalid measurment type");
 		}
