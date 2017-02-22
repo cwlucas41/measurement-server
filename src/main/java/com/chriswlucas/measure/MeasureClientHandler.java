@@ -45,7 +45,7 @@ public class MeasureClientHandler extends AppHandler{
 					handleMP(probes, generatePayload(payloadSize)) &&
 					handleCTP()
 			) {
-				System.out.println(calculateResult(mtype));
+				System.out.println(calculateResult(mtype) + " " + getUnits(mtype));
 			}
 			
 		} catch (IllegalArgumentException e) {
