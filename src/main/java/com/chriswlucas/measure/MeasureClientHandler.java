@@ -45,7 +45,7 @@ public class MeasureClientHandler extends AppHandler{
 					handleMP(probes, generatePayload(payloadSize)) &&
 					handleCTP()
 			) {
-				System.out.println(calculateResult(mtype) + " " + getUnits(mtype));
+				System.out.format(getFormat(mtype), calculateResult(mtype));
 			}
 			
 		} catch (IllegalArgumentException e) {
@@ -82,11 +82,11 @@ public class MeasureClientHandler extends AppHandler{
 		}
 	}
 	
-	String getUnits(MeasureType type) {
+	String getFormat(MeasureType type) {
 		if (type == MeasureType.RTT) {
-			return "s";
+			return "average rtt: %.3d s";
 		} else if (type == MeasureType.TPUT) {
-			return "kbps";
+			return "average tput: %.3d kbps";
 		} else {
 			throw new IllegalArgumentException("Invalid measurment type");
 		}
