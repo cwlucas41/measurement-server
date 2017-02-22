@@ -2,6 +2,12 @@ package com.chriswlucas.measure;
 
 import com.chriswlucas.client_server_arch.Client;
 
+/**
+ * Main class for the measure client. Clint takes hostname and port
+ * command line arguments.
+ * @author cwlucas41
+ *
+ */
 public class MeasureClient {
 	
 	public static void main(String[] args) {

@@ -12,11 +12,14 @@ import com.chriswlucas.client_server_arch.AppHandler;
 import com.chriswlucas.measure.message.*;
 import com.chriswlucas.measure.message.CSPMessage.MeasureType;
 
+/**
+ * Business logic for measure client. The client takes a connection setup
+ * phase message from the user and performs the requested measurement if
+ * the input message is valid.
+ * @author cwlucas41
+ *
+ */
 public class MeasureClientHandler extends AppHandler{
-	
-	public MeasureClientHandler(BufferedReader reader, PrintWriter writer) {
-		super(reader, writer);
-	}
 
 	private int probes;
 	private int payloadSize;
@@ -25,12 +28,23 @@ public class MeasureClientHandler extends AppHandler{
 	private List<Long> rtts;
 	private BufferedReader userIn = new BufferedReader(new InputStreamReader(System.in));
 
+	/**
+	 * Creates the handler with a reader and writer
+	 * @param reader
+	 * @param writer
+	 */
+	public MeasureClientHandler(BufferedReader reader, PrintWriter writer) {
+		super(reader, writer);
+	}
+	
 	public void run() {		
 		try {
 
-			if (handleCSP() && 
+			if (
+					handleCSP() && 
 					handleMP(probes, generatePayload(payloadSize)) &&
-					handleCTP()) {
+					handleCTP()
+			) {
 				System.out.println(calculateResult(mtype));
 			}
 			
@@ -41,10 +55,21 @@ public class MeasureClientHandler extends AppHandler{
 		}		
 	}
 	
-	void setUserIn(BufferedReader reader) {
+	/**
+	 * Sets the user input so that something other than the default stdin
+	 * can be used. Useful for testing.
+	 * @param reader
+	 */
+	protected void setUserIn(BufferedReader reader) {
 		userIn = reader;
 	}
 	
+	/**
+	 * Calculates the average rtt time for rtt calulations, and average 
+	 * throughput for tput calculations.
+	 * @param measure type
+	 * @return calculation
+	 */
 	double calculateResult(MeasureType type) {	
 		double averageRTTSeconds = rtts.stream().mapToDouble(a -> a).average().getAsDouble() / 1000;
 		
@@ -74,7 +99,7 @@ public class MeasureClientHandler extends AppHandler{
 	}
 	
 	private boolean handleMP(int probes, String payload) throws IOException {	
-		
+		// saves rtts to array
 		rtts = new ArrayList<Long>();
 		for (int i = 0; i < probes; i++) {
 			MPMessage message = new MPMessage(i+1, payload);
@@ -102,20 +127,28 @@ public class MeasureClientHandler extends AppHandler{
 		}
 	}
 	
-	synchronized void writeAndTime(Message message) {
+	private synchronized void writeAndTime(Message message) {
+		// synchronized to ensure accurate measurements
 		sendLine(message.toString());
 		tempTime = System.currentTimeMillis();
 	}
 	
-	synchronized String readAndTime() throws IOException {
+	private synchronized String readAndTime() throws IOException {
+		// synchronized to ensure accurate measurements
 		String response = readLine();
 		tempTime = System.currentTimeMillis();
 		return response;
 	}
 	
-	String generatePayload(int msize) {
+	/**
+	 * Generates a dummy payload of a given size
+	 * @param msize
+	 * @return
+	 */
+	static public String generatePayload(int msize) {
 		char[] payloadArray = new char[msize];
 		Arrays.fill(payloadArray, 'g');
-		return new String(payloadArray);
+		String payload = new String(payloadArray);
+		return payload;
 	}
 }

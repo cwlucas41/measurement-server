@@ -1,36 +1,20 @@
 package com.chriswlucas.measure;
 
-import static org.junit.Assert.*;
-
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.PrintStream;
-import java.io.PrintWriter;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-public class MeasureServerHandlerIntegrationTest {
+import com.chriswlucas.client_server_arch.AppHandlerInegrationLogic;
 
-	private MeasureServerHandler handler;
-	private PrintWriter expOutWriter;
-	private PrintWriter inWriter;
-	private PrintWriter actOutWriter;
-	private File in;
-	private File actOut;
-	private File expOut;
+public class MeasureServerHandlerIntegrationTest extends AppHandlerInegrationLogic{
 	
 	@Before
 	public void setup() throws IOException {
-		in = File.createTempFile("input", ".txt");
-		actOut = File.createTempFile("actOut", ".txt");
-		expOut = File.createTempFile("expOut", ".txt");
-		expOutWriter = new PrintWriter(expOut);
-		inWriter = new PrintWriter(in);
-		actOutWriter = new PrintWriter(actOut);
+		commonSetup();
 		handler = new MeasureServerHandler(
 				new BufferedReader(new FileReader(in)), 
 				actOutWriter
@@ -100,42 +84,7 @@ public class MeasureServerHandlerIntegrationTest {
 	
 	@After
 	public void clean() throws IOException {
-		
-		expOutWriter.close();
-		inWriter.close();
-		PrintStream original = System.out;
-		PrintStream nullStream = new PrintStream(File.createTempFile("null", ".out"));
-		System.setOut(nullStream);
-		
-		handler.run();
-		
-		System.setOut(original);
-		actOutWriter.close();
-		
-		compareFiles(actOut, expOut);
-		
-		in.delete();
-		actOut.delete();
-		expOut.delete();
-	}
-	
-	void compareFiles(File actual, File f2) {
-		try (
-			BufferedReader r1 = new BufferedReader(new FileReader(actual));
-			BufferedReader r2 = new BufferedReader(new FileReader(f2));
-		) {
-			String l1 = null;
-			String l2 = null;
-			while (((l1 = r1.readLine()) != null) && ((l2 = r2.readLine()) != null)) {
-				if (!l1.equals(l2)) {
-					System.out.println("Act: " + l1);
-					System.out.println("Exp: " + l2);
-					fail();
-				}
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		commonClean();
 	}
 
 }

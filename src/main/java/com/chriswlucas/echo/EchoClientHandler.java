@@ -16,6 +16,8 @@ import com.chriswlucas.client_server_arch.AppHandler;
  */
 public class EchoClientHandler extends AppHandler{
 
+	private BufferedReader userIn = new BufferedReader(new InputStreamReader(System.in));
+	
 	public EchoClientHandler(BufferedReader reader, PrintWriter writer) {
 		super(reader, writer);
 	}
@@ -23,10 +25,8 @@ public class EchoClientHandler extends AppHandler{
 	public void run() {
 		
 		try {
-			BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));
-			
 			String line;
-			while ((line = stdin.readLine()) != null) {
+			while ((line = userIn.readLine()) != null) {
 				sendLine(line);
 				System.out.println(readLine());
 			}
@@ -35,5 +35,14 @@ public class EchoClientHandler extends AppHandler{
 		} catch (IllegalStateException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	/**
+	 * Sets the user input so that something other than the default stdin
+	 * can be used. Useful for testing.
+	 * @param reader
+	 */
+	protected void setUserIn(BufferedReader reader) {
+		userIn = reader;
 	}
 }

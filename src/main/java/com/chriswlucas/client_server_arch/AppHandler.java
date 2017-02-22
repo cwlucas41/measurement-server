@@ -6,8 +6,8 @@ import java.io.PrintWriter;
 
 /**
  * Parent class for all handlers, both client and server. Provides dependency
- * injection by letting the PrintWriter and BufferedReader be set by the user
- * and provides a convenience method to set them both by adding a socket.
+ * injection by letting the user specify the reader and writer instead of taking
+ * socket for an argument.
  * 
  * @author cwlucas41
  *
