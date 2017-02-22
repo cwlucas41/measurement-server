@@ -84,9 +84,9 @@ public class MeasureClientHandler extends AppHandler{
 	
 	String getFormat(MeasureType type) {
 		if (type == MeasureType.RTT) {
-			return "average rtt: %.3f s";
+			return "average rtt: %.3f s%n";
 		} else if (type == MeasureType.TPUT) {
-			return "average tput: %.3f kbps";
+			return "average tput: %.3f kbps%n";
 		} else {
 			throw new IllegalArgumentException("Invalid measurment type");
 		}
